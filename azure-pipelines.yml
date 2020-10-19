@@ -18,6 +18,11 @@ steps:
     packageType: 'sdk'
     version: '3.1.403'
     includePreviewVersions: true
+
+- task: DockerInstaller@0
+  inputs:
+    dockerVersion: '17.09.0-ce'
+
 - task: SonarCloudPrepare@1
   inputs:
     SonarCloud: 'SonarCloud'
