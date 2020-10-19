@@ -16,19 +16,19 @@ steps:
 - task: UseDotNet@2
   inputs:
     packageType: 'sdk'
-    version: '5.0.100-rc.1.20452.10'
+    version: '3.1'
     includePreviewVersions: true
 - task: DotNetCoreCLI@2
   inputs:
     command: 'test'
-    projects: '**/*Tests.csproj'
+    projects: '**/*Fibonacci.Tests.csproj'
     arguments: '--configuration $(BuildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./coverage/opencover.xml'
     publishTestResults: false
 - task: DotNetCoreCLI@2
   inputs:
     command: 'publish'
     publishWebProjects: false
-    projects: '**/Demo.csproj'
+    projects: '**/Fibonacci.csproj'
     arguments: '-r win-x64 --self-contained=true /p:PublishSingleFile=true /p:IncludeNativeLibrariesInSingleFile=true --output $(Build.ArtifactStagingDirectory)'
 - task: PublishBuildArtifacts@1
   inputs:
