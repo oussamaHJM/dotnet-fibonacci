@@ -18,6 +18,14 @@ steps:
     packageType: 'sdk'
     version: '3.1.403'
     includePreviewVersions: true
+
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'test'
+    projects: '**/*Fibonacci.Tests.csproj'
+    arguments: '--configuration $(BuildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./coverage/opencover.xml'
+    publishTestResults: false
+
 - task: SonarCloudPrepare@1
   inputs:
     SonarCloud: 'SonarCloud'
@@ -37,12 +45,7 @@ steps:
     pollingTimeoutSec: '300'
 
 
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'test'
-    projects: '**/*Fibonacci.Tests.csproj'
-    arguments: '--configuration $(BuildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./coverage/opencover.xml'
-    publishTestResults: false
+
 - task: DotNetCoreCLI@2
   inputs:
     command: 'publish'
