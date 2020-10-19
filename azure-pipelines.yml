@@ -18,12 +18,34 @@ steps:
     packageType: 'sdk'
     version: '3.1.403'
     includePreviewVersions: true
+- task: SonarCloudPrepare@1
+  inputs:
+    SonarCloud: 'SonarCloud'
+    organization: 'oussamahjm'
+    scannerMode: 'CLI'
+    configMode: 'manual'
+    cliProjectKey: 'oussamaHJM_dotnet-fibonacci'
+    cliProjectName: 'dotnet-fibonacci'
+    cliSources: '.'
+    extraProperties: |
+        sonar.exclusions=**/*.spec.ts,**/*.spec.tsx,**/*.stories.tsx,**/coverage/**,Scripts/**,**/*.scss,**/__snapshots__/**,**/*[Tt]ests.cs,**/node_modules/**,**/ClientApp/build/**,**/ClientApp/.storybook/**,**/obj/**,**/__mocks__/**,**/ClientApp/src/serviceWorker.ts
+        sonar.typescript.lcov.reportPaths=ClientApp/coverage/lcov.info
+        sonar.cs.opencover.reportsPaths=**/opencover.xml
 - task: DotNetCoreCLI@2
   inputs:
     command: 'test'
     projects: '**/*Fibonacci.Tests.csproj'
     arguments: '--configuration $(BuildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./coverage/opencover.xml'
     publishTestResults: false
+
+
+- task: SonarCloudAnalyze@1
+- task: SonarCloudPublish@1
+  inputs:
+    pollingTimeoutSec: '300'
+
+
+
 - task: DotNetCoreCLI@2
   inputs:
     command: 'publish'
