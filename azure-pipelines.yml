@@ -29,7 +29,7 @@ steps:
     command: 'publish'
     publishWebProjects: false
     projects: '**/Fibonacci.csproj'
-    arguments: '-r win-x64 --self-contained=true /p:PublishSingleFile=true /p:IncludeNativeLibrariesInSingleFile=true --output $(Build.ArtifactStagingDirectory)'
+    arguments: '-r win-x64 --self-contained=true --output $(Build.ArtifactStagingDirectory)'
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
