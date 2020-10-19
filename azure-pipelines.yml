@@ -1,60 +1,37 @@
-  # ASP.NET Core (.NET Framework)
-# Build and test ASP.NET Core projects targeting the full .NET Framework.
-# Add steps that publish symbols, save build artifacts, and more:
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
 
 trigger:
 - master
 
-
-
-
-
+pool:
+  vmImage: 'ubuntu-latest'
 
 variables:
-  solution: '**/*.sln'
-  buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
 steps:
-- task: DotNetCoreInstaller@0
-  displayName: "Use .NET Core sdk 3.1.202"
+- task: UseDotNet@2
   inputs:
-    version: 3.1.202
-
-- task: NuGetToolInstaller@1
+    packageType: 'sdk'
+    version: '5.0.100-rc.1.20452.10'
+    includePreviewVersions: true
 - task: DotNetCoreCLI@2
   inputs:
     command: 'test'
-    projects: '**/tests.csproj'
+    projects: '**/*Tests.csproj'
     arguments: '--configuration $(BuildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./coverage/opencover.xml'
-    testRunTitle: 'dotnet test'
-
+    publishTestResults: false
 - task: DotNetCoreCLI@2
   inputs:
     command: 'publish'
-    publishWebProjects: true
-    arguments: '--configuration $(BuildConfiguration) --output $(Build.ArtifactStagingDirectory) -f netcoreapp3.1 /p:AssemblyVersion=1.0.0.0'
-    zipAfterPublish: True
-
+    publishWebProjects: false
+    projects: '**/Demo.csproj'
+    arguments: '-r win-x64 --self-contained=true /p:PublishSingleFile=true /p:IncludeNativeLibrariesInSingleFile=true --output $(Build.ArtifactStagingDirectory)'
 - task: PublishBuildArtifacts@1
-  displayName: "Publish Artifact: $(Build.DefinitionName)-Artifact"
   inputs:
-    ArtifactName: "$(Build.DefinitionName)-Artifact"      
-
-
-- task: NuGetCommand@2
-  inputs:
-    restoreSolution: '$(solution)'
-
-- task: VSBuild@1
-  inputs:
-    solution: '$(solution)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:DesktopBuildPackageLocation="$(build.artifactStagingDirectory)\WebApp.zip" /p:DeployIisAppPath="Default Web Site"'
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
-
-- task: VSTest@2
-  inputs:
-    platform: '$(buildPlatform)'
-    configuration: '$(buildConfiguration)'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
