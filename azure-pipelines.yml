@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # ASP.NET Core
 # Build and test ASP.NET Core projects targeting .NET Core.
 # Add steps that run tests, create a NuGet package, deploy, and more:
@@ -57,69 +56,3 @@ steps:
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: 'drop'
-=======
-# ASP.NET Core
-# Build and test ASP.NET Core projects targeting .NET Core.
-# Add steps that run tests, create a NuGet package, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
-
-trigger:
-- master
-
-pool:
-  vmImage: 'ubuntu-latest'
-
-variables:
-  buildConfiguration: 'Release'
-
-steps:
-- task: UseDotNet@2
-  inputs:
-    packageType: 'sdk'
-    version: '3.1.403'
-    includePreviewVersions: true
-
-- task: DockerInstaller@0
-  inputs:
-    dockerVersion: '17.09.0-ce'
-
-- task: SonarCloudPrepare@1
-  inputs:
-    SonarCloud: 'SonarCloud'
-    organization: 'oussamahjm'
-    scannerMode: 'CLI'
-    configMode: 'manual'
-    cliProjectKey: 'oussamaHJM_dotnet-fibonacci'
-    cliProjectName: 'dotnet-fibonacci'
-    cliSources: '.'
-    extraProperties: |
-        sonar.exclusions=**/*.spec.ts,**/*.spec.tsx,**/*.stories.tsx,**/coverage/**,Scripts/**,**/*.scss,**/__snapshots__/**,**/*[Tt]ests.cs,**/node_modules/**,**/ClientApp/build/**,**/ClientApp/.storybook/**,**/obj/**,**/__mocks__/**,**/ClientApp/src/serviceWorker.ts
-        sonar.typescript.lcov.reportPaths=ClientApp/coverage/lcov.info
-        sonar.cs.opencover.reportsPaths=**/opencover.xml
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'test'
-    projects: '**/*Fibonacci.Tests.csproj'
-    arguments: '--configuration $(BuildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./coverage/opencover.xml'
-    publishTestResults: false
-
-
-- task: SonarCloudAnalyze@1
-- task: SonarCloudPublish@1
-  inputs:
-    pollingTimeoutSec: '300'
-
-
-
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'publish'
-    publishWebProjects: false
-    projects: '**/Fibonacci.csproj'
-    arguments: '-r win-x64 --self-contained=true --output $(Build.ArtifactStagingDirectory)'
-- task: PublishBuildArtifacts@1
-  inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-    ArtifactName: 'drop'
->>>>>>> 09701ecc9c57fce2afd5f5ae10d113ab5401cac7
-    publishLocation: 'Container'
